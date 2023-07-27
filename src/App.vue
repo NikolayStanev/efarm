@@ -42,18 +42,28 @@
           </template>
 
         </v-app-bar>
-        <v-navigation-drawer v-if="isLoggedIn" v-model="drawer">
-          <v-list>
-            <v-list-item title="Navigation drawer"></v-list-item>
-          </v-list>
-        </v-navigation-drawer>
+        <v-navigation-drawer
+            v-if="isLoggedIn"
+            v-model="drawer"
+            expand-on-hover
+            rail
+            width="15%"
+            permanent>
 
+          <v-list
+              nav
+              density="comfortable"
+              v-model:selected="currentMenu">
+            <v-list-item v-for="current in menus" :title="current.name" :prepend-icon="current.icon" :key="current.name" color="secondary" :value="current.value">
+            </v-list-item>
+          </v-list>
+
+        </v-navigation-drawer>
+        <secondary-nav-drawer :current-menu="currentMenu"></secondary-nav-drawer>
         <v-main style="min-height: 300px;">
           <router-view></router-view>
         </v-main>
       </v-layout>
-
-
   </v-app>
 
 
@@ -61,11 +71,10 @@
 </template>
 
 <script>
-
+import SecondaryNavDrawer from "@/components/SecondaryNavDrawer";
 export default {
   name: 'App',
-  components: {
-  },
+  components: {SecondaryNavDrawer},
   computed: {
     // a computed getter
     isLoggedIn() {
@@ -75,6 +84,24 @@ export default {
   },
   data:() => ({
     drawer: true,
+    currentMenu: ["Map"],
+    additionalMenu: false,
+    searchInput: "",
+    regionSelected:[],
+    fieldSelect:[],
+    regions:["California", "Colorado", "Alabama", "Daralan"],
+    fields:["Field 1", "Field 2", "Field 3"],
+    regionsShow:[],
+
+    menus: [
+      {name: 'Map', icon: 'mdi-map', value: 'Map', options:[
+          {name: 'Fields', icon:'mdi-backup-table', value: "Fields"}
+        ]},
+      {name: 'Production', icon: 'mdi-leaf', value: 'Production'},
+      {name: 'Contracts', icon: 'mdi-file', value: 'Contracts'}
+    ]
+
+
   }),
 
   watch: {
@@ -87,7 +114,7 @@ export default {
       this.$router.push({name:'HomePage'})
       this.$store.state.isLoggedIn = false
     }
-  }
+  },
 }
 </script>
 

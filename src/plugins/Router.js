@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage'
 import SignIn from "@/views/SignIn";
-import MainView from "@/views/MainView";
+import MapView from "@/views/MapView";
 
 
 const routes = [
@@ -17,9 +17,9 @@ const routes = [
         component: SignIn
     },
     {
-        path: '/main-view',
-        name: 'MainView',
-        component: MainView
+        path: '/map',
+        name: 'Map',
+        component: MapView
     },
     {
         // path: '/about',

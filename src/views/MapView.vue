@@ -8,7 +8,7 @@
 import mapLoader from "@/plugins/GoogleMap";
 
 export default {
-  name: "MainView",
+  name: "MapView",
 
   data() {
     return {
@@ -102,7 +102,7 @@ export default {
 
 <style scoped>
 #map {
-  height: 400px;
+  height: 80vh;
 }
 
 

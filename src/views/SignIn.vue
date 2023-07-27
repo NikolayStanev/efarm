@@ -74,7 +74,7 @@ export default {
 
       setTimeout(() => (this.loading = false), 2000)
 
-      this.$router.push({name:'MainView'})
+      this.$router.push({name:'Map'})
       this.$store.state.isLoggedIn = true;
     },
     required (v) {
