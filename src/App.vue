@@ -1,13 +1,13 @@
 <template>
 
-  <v-app>
+  <v-app @click = "isAccountMenuOpen = false">
       <v-layout>
         <v-app-bar color="primary">
           <template v-slot:prepend>
             <v-app-bar-nav-icon color="secondary" @click.stop="drawer = !drawer" variant="text"></v-app-bar-nav-icon>
           </template>
 
-          <v-app-bar-title color="secondary" class="text-left">efarmbg</v-app-bar-title>
+          <v-app-bar-title style="cursor: pointer" @click="$router.push({name:'HomePage'})" color="secondary" class="text-left">efarmbg</v-app-bar-title>
 
           <template v-slot:append>
             <v-btn class="justify-center" color="secondary"
@@ -33,11 +33,10 @@
               Sign in
             </v-btn>
             <v-btn v-if="isLoggedIn"
+                   icon="mdi-account"
+                   @click.stop = "isAccountMenuOpen = !isAccountMenuOpen"
                    color="secondary"
-                   prepend-icon="mdi-logout"
-                   variant="text"
-                   @click="signOut" >
-              Sign out
+                   size="large">
             </v-btn>
           </template>
 
@@ -47,7 +46,7 @@
             v-model="drawer"
             expand-on-hover
             rail
-            width="15%"
+            width="10%"
             permanent>
 
           <v-list
@@ -61,6 +60,8 @@
         </v-navigation-drawer>
         <secondary-nav-drawer :current-menu="currentMenu"></secondary-nav-drawer>
         <v-main style="min-height: 300px;">
+          <account-card v-if="isAccountMenuOpen">
+          </account-card>
           <router-view></router-view>
         </v-main>
       </v-layout>
@@ -72,9 +73,10 @@
 
 <script>
 import SecondaryNavDrawer from "@/components/SecondaryNavDrawer";
+import AccountCard from "@/components/AccountCard.vue";
 export default {
   name: 'App',
-  components: {SecondaryNavDrawer},
+  components: {AccountCard, SecondaryNavDrawer},
   computed: {
     // a computed getter
     isLoggedIn() {
@@ -84,7 +86,8 @@ export default {
   },
   data:() => ({
     drawer: true,
-    currentMenu: ["Map"],
+    currentMenu: [],
+    isAccountMenuOpen: false,
     additionalMenu: false,
     searchInput: "",
     regionSelected:[],
@@ -110,9 +113,12 @@ export default {
     },
   },
   methods: {
-    signOut() {
-      this.$router.push({name:'HomePage'})
-      this.$store.state.isLoggedIn = false
+    accountMenu() {
+      console.log(this.isAccountMenuOpen && this.isLoggedIn())
+      if(this.isAccountMenuOpen && this.isLoggedIn()){
+        return true;
+      }
+      return false;
     }
   },
 }
