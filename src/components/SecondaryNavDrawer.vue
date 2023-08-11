@@ -101,6 +101,13 @@ export default {
 
   mounted() {
     this.regionsShow = this.regions
+    this.$axios.get("land/%D0%BF%D0%B8%D0%B1%D0%BE%D0%BD%D0%B5%D0%B2")
+        .then((response) => {
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
   }
 
 }

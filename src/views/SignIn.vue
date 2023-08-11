@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container >
       <v-sheet class="px-12 py-16" rounded>
 <!--        <h1 style="font-size: 5em; font-family:oswald sans-serif !important; letter-spacing: 0.05em !important;" class="pa-8 text-center text-secondary" >eFarm</h1>-->
         <v-card class="mx-auto px-6 py-8" max-width="500">
@@ -45,10 +45,24 @@
           </v-form>
         </v-card>
       </v-sheet>
+    <v-dialog
+        v-model="dialog"
+        width="auto"
+    >
+      <v-card>
+        <v-card-text>
+          {{ dialogText }}
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="secondary" block @click="dialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+
 export default {
   name: "SignIn",
 
@@ -58,6 +72,8 @@ export default {
     loading: false,
     userName: '',
     password: '',
+    dialog:false,
+    dialogText: '',
     rules: [
       value => {
         if (value) return true
@@ -73,19 +89,22 @@ export default {
       this.loading = true
 
       let request =  "uid" + "=" + encodeURIComponent(this.userName) + "&" + "pwd"  + "=" + encodeURIComponent(this.password)
-
       this.$axios.post("https://app.efarmbg.com/efarmmobile/rest/login", request)
-          .then(function (response) {
+          .then((response) => {
             console.log(response);
 
             this.$router.push({name:'Map'})
             this.$store.state.isLoggedIn = true;
           })
-          .catch(function (error) {
+          .catch((error) => {
             console.log(error);
-            alert("Invalid username or password!")
+            this.dialogText = 'Invalid username or password!'
+            this.dialog = true
           });
 
+      //TODO remove hack
+      // this.$store.state.isLoggedIn = true;
+      // this.$router.push({name:'Map'})
       this.loading = false
 
     },
