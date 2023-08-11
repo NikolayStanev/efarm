@@ -50,7 +50,7 @@
 
 <script>
 export default {
-  name: "LogIn",
+  name: "SignIn",
 
 
   data: () => ({
@@ -72,10 +72,22 @@ export default {
 
       this.loading = true
 
-      setTimeout(() => (this.loading = false), 2000)
+      let request =  "uid" + "=" + encodeURIComponent(this.userName) + "&" + "pwd"  + "=" + encodeURIComponent(this.password)
 
-      this.$router.push({name:'Map'})
-      this.$store.state.isLoggedIn = true;
+      this.$axios.post("https://app.efarmbg.com/efarmmobile/rest/login", request)
+          .then(function (response) {
+            console.log(response);
+
+            this.$router.push({name:'Map'})
+            this.$store.state.isLoggedIn = true;
+          })
+          .catch(function (error) {
+            console.log(error);
+            alert("Invalid username or password!")
+          });
+
+      this.loading = false
+
     },
     required (v) {
       return !!v || 'Field is required'

@@ -53,7 +53,12 @@
               nav
               density="comfortable"
               v-model:selected="currentMenu">
-            <v-list-item v-for="current in menus" :title="current.name" :prepend-icon="current.icon" :key="current.name" color="secondary" :value="current.value">
+            <v-list-item v-for="current in menus"
+                         :title="current.name"
+                         :prepend-icon="current.icon"
+                         :key="current.name" color="secondary"
+                         @click="$router.push({name: current.onClickTo})"
+                         :value="current.value">
             </v-list-item>
           </v-list>
 
@@ -97,7 +102,7 @@ export default {
     regionsShow:[],
 
     menus: [
-      {name: 'Map', icon: 'mdi-map', value: 'Map', options:[
+      {name: 'Map', icon: 'mdi-map', value: 'Map',onClickTo: "Map",  options:[
           {name: 'Fields', icon:'mdi-backup-table', value: "Fields"}
         ]},
       {name: 'Production', icon: 'mdi-leaf', value: 'Production'},
