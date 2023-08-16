@@ -10,6 +10,13 @@ import mapLoader from "@/plugins/GoogleMap";
 export default {
   name: "MapView",
 
+  computed: {
+    getMapViewPoint() {
+      return this.$store.state.mapViewPoint
+    }
+
+  },
+
   data() {
     return {
       google: null,
@@ -23,6 +30,16 @@ export default {
       firstVertex: null,
     }
   },
+
+  watch:{
+    getMapViewPoint(value) {
+      console.log(value)
+      let latlang = new this.google.maps.LatLng(value.lat, value.lang);
+      this.map.setCenter(latlang);
+      this.map.setZoom(14)
+    }
+  },
+
 
   async mounted() {
     this.google =  await mapLoader.load();

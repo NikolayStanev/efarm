@@ -3,6 +3,8 @@
       v-if="currentMenu[0] === 'Map'"
       permanent>
     <v-list density="compact"
+            lines="three"
+            open-strategy="single"
             v-model:selected="fieldSelect"
             v-model:opened="regionSelected">
       <v-list-item >
@@ -22,13 +24,14 @@
       <v-list-group v-for="(region,i) in regionsShow"
                     :key="i"
                     color="secondary"
-                    :value="region.name">
+                    :value="region">
 
         <template v-slot:activator="{ props }">
 
           <v-list-item
               v-bind="props"
               :title="region.name"
+              :subtitle="region.department + ', ' + region.municipality "
           ></v-list-item>
 
         </template>
@@ -60,12 +63,10 @@ export default {
     searchInput: "",
     regionSelected:[],
     fieldSelect:[],
-    regions:[{name:"California", fields:["Field 1", "Field 2" , "Field 3"]},
-      {name:"Colorado", fields: ["Field 4", "Field 5" , "Field 6"]},
-      {name:"Alabama", fields:["Field 7", "Field 8" , "Field 9"]},
-      {name:"Daralan",fields:[]}],
+    regions:[],
     fields:[],
     regionsShow:[],
+    mapView: String,
 
   }),
 
@@ -78,6 +79,14 @@ export default {
         this.regionsShow = this.regions
       }
     },
+    regionSelected(value) {
+      if (value !== {}) {
+        let selected = value[0]
+        let langLat = selected.location.toString().slice(selected.location.indexOf("(") + 1,selected.location.indexOf(")")).split(" ")
+        this.$store.commit('changeMapView',langLat)
+      }
+
+    }
   },
   methods: {
     search(element, searchValue) {
@@ -101,9 +110,12 @@ export default {
 
   mounted() {
     this.regionsShow = this.regions
+    //TODO: remove hack!
     this.$axios.get("land/%D0%BF%D0%B8%D0%B1%D0%BE%D0%BD%D0%B5%D0%B2")
         .then((response) => {
           console.log(response.data)
+          this.regions = response.data
+          this.regionsShow = this.regions
         })
         .catch((error) => {
           console.log(error)
