@@ -82,8 +82,7 @@ export default {
     regionSelected(value) {
       if (value !== {}) {
         let selected = value[0]
-        let langLat = selected.location.toString().slice(selected.location.indexOf("(") + 1,selected.location.indexOf(")")).split(" ")
-        this.$store.commit('changeMapView',langLat)
+        this.$store.commit('changeMapView',selected)
       }
 
     }

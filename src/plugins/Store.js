@@ -1,24 +1,20 @@
 import { createStore } from 'vuex'
 
 const store = createStore({
-    state : () => {
+    state: () => {
         if (localStorage.getItem("state"))
             return JSON.parse(localStorage.getItem("state"));
         return {
             isLoggedIn: false,
-                apiKey: 'AIzaSyAi4G8BHZV19JYCZswgCmUZw-y0Nh6h580',
-                mapViewPoint: {
-                    lat: String,
-                    lang: String
-                },
+            apiKey: 'AIzaSyAi4G8BHZV19JYCZswgCmUZw-y0Nh6h580',
+            selectedLand: {}
         }
     },
     mutations: {
-        changeMapView (state,langLat) {
+        changeMapView(state, selectedLand) {
             // mutate state
-            state.mapViewPoint = {}
-            state.mapViewPoint.lat = langLat[1]
-            state.mapViewPoint.lang = langLat[0]
+            state.selectedLand = {}
+            state.selectedLand = selectedLand
         }
     },
 })

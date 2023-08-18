@@ -38,5 +38,10 @@ export default createVuetify({
         themes: {
             myCustomLightTheme,
         }
-    }
+    },
+    defaults: {
+        VBtn: {
+            color: 'primary',
+        },
+    },
 })

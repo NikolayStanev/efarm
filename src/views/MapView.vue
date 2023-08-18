@@ -1,24 +1,30 @@
 <template>
-  <div>
-    <div id="map" class="google-map ma-8 rounded-lg elevation-4" ref="googleMap"></div>
+  <div style="position: relative">
+    <div id="map" class="google-map ma-8 rounded-lg elevation-4" ref="googleMap">
+    </div>
+    <v-btn @click="drawKVSForEkatte()"
+           position="absolute"
+           style="left: 40px; top: 10px; z-index: 3">KVS</v-btn>
   </div>
 </template>
 
 <script>
 import mapLoader from "@/plugins/GoogleMap";
+import {toRaw} from "vue";
 
 export default {
   name: "MapView",
 
   computed: {
-    getMapViewPoint() {
-      return this.$store.state.mapViewPoint
+    getSelectedLand() {
+      return this.$store.state.selectedLand
     }
 
   },
 
   data() {
     return {
+      isKvsOn: false,
       google: null,
       map: null,
       marker: null,
@@ -28,15 +34,19 @@ export default {
       polygons:[],
       polyLine: null,
       firstVertex: null,
+      currentKVS: []
     }
   },
 
   watch:{
-    getMapViewPoint(value) {
-      console.log(value)
-      let latlang = new this.google.maps.LatLng(value.lat, value.lang);
-      this.map.setCenter(latlang);
+    getSelectedLand(value) {
+      let location = value.location.toString().slice(value.location.indexOf("(") + 1,value.location.indexOf(")")).split(" ")
+      let latLang = new this.google.maps.LatLng(location[1], location[0]);
+      this.map.setCenter(latLang);
       this.map.setZoom(14)
+
+      this.currentKVS = []
+      this.getKVSForEkatte(0)
     }
   },
 
@@ -48,6 +58,67 @@ export default {
   },
 
   methods: {
+    drawKVSForEkatte() {
+      this.isKvsOn = !this.isKvsOn
+      if (this.isKvsOn) {
+        for( let i = 0; i < this.currentKVS.length; i ++ ) {
+          let arrayOfKvs = this.currentKVS[0];
+
+          for (let t = 0; t < arrayOfKvs.length; t++) {
+
+            let kvs = arrayOfKvs[t];
+            this.draw(kvs)
+
+          }
+        }
+      }else {
+        for (let i = 0; i<this.polygons.length; i++) {
+            let polygon = this.polygons[i]
+            toRaw(polygon).setMap(null)
+        }
+        this.polygons =[];
+      }
+    },
+    draw(kvs) {
+      let polygonString = kvs.polygon
+
+      //remove "POLYGON + ( )"
+      polygonString = polygonString.substring(polygonString.lastIndexOf("(") + 1, polygonString.indexOf(")"))
+
+      let coords = polygonString.split(',');
+
+      let listDots = new Array();
+      for (let k = 0; k < coords.length; k++) {
+        let lng = coords[k].split(" ")[0];
+        let lat = coords[k].split(" ")[1];
+
+        let latLangObj = new this.google.maps.LatLng(+lat, +lng)
+        listDots.push(latLangObj);
+
+      }
+
+
+      this.createPolygon(listDots)
+
+    },
+
+    getKVSForEkatte(pageNum) {
+
+      let subKVS = false;
+
+      let url = "kvs/%D0%BF%D0%B8%D0%B1%D0%BE%D0%BD%D0%B5%D0%B2/" + this.getSelectedLand.ekatte + "?subKVSFlag=" + subKVS + '&pageNum=' + pageNum
+      this.$axios.get(url)
+          .then((response) => {
+            console.log(response.data)
+            this.currentKVS.push(response.data)
+            if(response.data.length >=600) {
+              this.getKVSForEkatte(++pageNum)
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+    },
 
     initializeMap() {
       this.map = new this.google.maps.Map(this.$refs.googleMap, {
@@ -90,24 +161,23 @@ export default {
 
       let polygon = new this.google.maps.Polygon({
         paths: path,
-        strokeColor: "#FF0000",
+        strokeColor: "#F2FF00",
         strokeOpacity: 0.8,
         strokeWeight: 3,
-        fillColor: "#FF0000",
-        fillOpacity: 0.35,
-        draggable: true
+        fillColor: "#F6FAA5",
+        fillOpacity: 0,
         // editable: true,
       });
-      this.markerPositions = [];
-      this.polyLine.setMap(null);
-      this.polyLine = null;
-      console.log("Reset!")
-
-      polygon.addListener("rightclick", () => {
-        console.log("rightClick!")
-        polygon.setMap(null)
-        this.polygons.splice(polygon, 1)
-      })
+      // this.markerPositions = [];
+      // this.polyLine.setMap(null);
+      // this.polyLine = null;
+      // console.log("Reset!")
+      //
+      // polygon.addListener("rightclick", () => {
+      //   console.log("rightClick!")
+      //   polygon.setMap(null)
+      //   this.polygons.splice(polygon, 1)
+      // })
 
       polygon.setMap(this.map);
       this.polygons.push(polygon);
